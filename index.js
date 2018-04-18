@@ -42,6 +42,7 @@ io.on('connection', function (socket) {
     });
   })
   socket.on('correct', (data) => {
+
     var currentScores = data
     io.emit('update scores', currentScores)
   })
@@ -49,7 +50,14 @@ io.on('connection', function (socket) {
     io.emit('incorrect', incorrectGuess)
   })
   socket.on('disconnect', () => {
-    var index = userArray.indexOf(socket.id)
+    // find index by object property
+    // splice that shit
+
+    var index = userArray.findIndex(
+      function (obj) {
+        return obj.id === socket.id
+      }
+    )
     if (index !== -1) {
       userArray.splice(index, 1)
     }
