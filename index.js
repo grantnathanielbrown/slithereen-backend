@@ -75,7 +75,7 @@ io.on('connection', function (socket) {
   })
 })
 
-app.set('port', 3001)
+app.set('port', process.env.PORT || 3001)
 
 http.listen(app.get('port'), function () {
   console.log(`✅ PORT: ${app.get('port')} 🌟`)
