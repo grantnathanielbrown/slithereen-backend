@@ -42,16 +42,24 @@ io.on('connection', function (socket) {
     });
   })
   socket.on('correct', (data) => {
+    console.log(data)
+    var index = userArray.findIndex(
+      function (obj) {
+        return obj.id === socket.id
+      }
+    )
 
-    var currentScores = data
-    io.emit('update scores', currentScores)
+    userArray[index].score = userArray[index].score + data
+    console.log(userArray[index].score)
+    io.emit('user list', userArray)
+    io.emit('end round')
   })
-  socket.on('incorrect', function(incorrectGuess) {
-    io.emit('incorrect', incorrectGuess)
+  socket.on('incorrect', () => {
+    io.emit('incorrect')
   })
   socket.on('disconnect', () => {
     // find index by object property
-    // splice that shit
+    // splice that
 
     var index = userArray.findIndex(
       function (obj) {
