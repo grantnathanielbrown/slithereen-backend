@@ -3,10 +3,6 @@ var http = require('http').Server(app)
 var io = require('socket.io')(http)
 var axios = require('axios')
 
-// app.get('/', function (req, res) {
-//   res.sendFile(__dirname + '/index.html')
-// })
-
 var userArray = []
 
 io.on('connection', function (socket) {
@@ -16,24 +12,15 @@ io.on('connection', function (socket) {
     io.emit('user list', userArray)
     console.log("ARRAY OF USERS: " + userArray)
   })
-  // socket.on('connect', () => {
-  //   userArray.push(socket.id)
-  //   console.log(userArray)
-  
-  //   socket.emit('user id', userArray)
-
-  // } )
 
   socket.on('chat message', function (msg) {
     io.emit('chat message', msg)
   })
-  // 2
   socket.on('new question', function(question) {
 
     var randomQuestion = "http://jservice.io/api/random"
     axios.get(randomQuestion).then((response) => {
       question = response.data[0]
-      // 3
       io.emit('new question', question)
       console.log("server has received new question")
       console.log(question)
