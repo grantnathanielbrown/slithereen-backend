@@ -4,6 +4,7 @@ var io = require('socket.io')(http)
 var axios = require('axios')
 
 var userArray = []
+var messageArray = []
 
 io.on('connection', function (socket) {
 
@@ -13,8 +14,13 @@ io.on('connection', function (socket) {
     console.log("ARRAY OF USERS: " + userArray)
   })
 
-  socket.on('chat message', function (msg) {
-    io.emit('chat message', msg)
+  socket.on('submit message', (data) => {
+    messageArray.push(data)
+    if (messageArray.length > 10) {
+      messageArray.shift()
+    }
+    console.log("MESSAGE ARRAY: " + messageArray)
+    io.emit('message list', messageArray)
   })
   socket.on('new question', function(question) {
 
@@ -28,25 +34,33 @@ io.on('connection', function (socket) {
         console.log(error);
     });
   })
-  socket.on('correct', (data) => {
+  socket.on('correct guess', (data) => {
     console.log(data)
+    messageArray.push(data.announcer)
+    if (messageArray.length > 10) {
+      messageArray.shift()
+    }
     var index = userArray.findIndex(
       function (obj) {
         return obj.id === socket.id
       }
     )
 
-    userArray[index].score = userArray[index].score + data
+    userArray[index].score = userArray[index].score + data.value
     console.log(userArray[index].score)
     io.emit('user list', userArray)
+    io.emit('message list', messageArray)
     io.emit('end round')
   })
-  socket.on('incorrect', () => {
-    io.emit('incorrect')
+  socket.on('incorrect guess', (data) => {
+    messageArray.push(data)
+    if (messageArray.length > 10) {
+      messageArray.shift()
+    }
+    console.log("MESSAGE ARRAY: " + messageArray)
+    io.emit('message list', messageArray)
   })
   socket.on('disconnect', () => {
-    // find index by object property
-    // splice that
 
     var index = userArray.findIndex(
       function (obj) {
